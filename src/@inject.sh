@@ -3,6 +3,11 @@ import utility.sh
 
 
 @inject() {
+    local location
+    injection_location "${1:-}" && local location="${1}" || return 1
+    local pre
+    local post
+
     local remove="remove_element_from_array \${function_namespace} BASH_ANNOTATIONS_FUNCTION_ARRAY"
     local listener="invoke_function_annotation_pre \$annotated_function"
     local source_file="$(realpath "${BASH_SOURCE[1]}")"
@@ -13,7 +18,14 @@ import utility.sh
         get_annotated_function_body "function_body" "${source_file}"
 
         if [[ -n "${function_body}" ]]; then
-
+            if [[ "${location}" == "pre" ]]; then
+                pre="${function_body}"            
+            elif [[ "${location}" == "post" ]]; then
+                post="${function_body}"
+            elif [[ "${location}" == "prepost" ]]; then
+                pre="${function_body}"            
+                post="${function_body}"
+            fi
             { source /dev/fd/999 ; } 999<<-DECLARE_ANNOTATION_FUNCTION
             @${annotated_function}() {
                 local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
@@ -31,8 +43,9 @@ import utility.sh
 
                                 { builtin source /dev/fd/999 ; } 999<<-DECLARE_INJECTED_FUNCTION
                                 \${injection_annotated_function}() {
-                                    ${function_body}
+                                    ${pre:-}
                                     \\\${func_body}
+                                    ${post:-}
                                 }
 DECLARE_INJECTED_FUNCTION
                             ${remove}
@@ -47,4 +60,24 @@ DECLARE_NAMESPACE_FUNCTION
 DECLARE_ANNOTATION_FUNCTION
         fi
     fi
+}
+
+
+injection_location() {
+    local trigger="${1}"
+
+    case "${trigger}" in
+        "pre")
+            return 0
+        ;;
+        "post")
+            return 0 
+        ;;
+        "prepost")
+            return 0 
+        ;;
+        *)
+            return 1 
+        ;;
+    esac
 }
