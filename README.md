@@ -1,1 +1,1 @@
-# bash-annotations-decorators
+# bash-annotations
