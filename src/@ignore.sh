@@ -1,5 +1,3 @@
-#!/bin/bash
-
 import @interface.sh 
 
 
