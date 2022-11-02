@@ -1,4 +1,4 @@
-import @inject.sh
+import interfaces/@inject.sh
 
 
 @inject "prepost"
