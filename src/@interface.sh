@@ -3,8 +3,8 @@ import utility.sh
 
 
 @interface() {
-    interface::type "${1:-}" && local type="${1}" || return 1
-    interface::trigger "${2:-}" && local trigger="${2}" || return 1
+    annotated_type "${1:-}" && local type="${1}" || return 1
+    trigger "${2:-}" && local trigger="${2}" || return 1
 
     local get_annotated_target
     local annotation_target
@@ -65,7 +65,7 @@ DECLARE_ANNOTATION_FUNCTION
 }
 
 
-interface::type() {
+annotated_type() {
     local type="${1}"
 
     case "${type}" in
@@ -82,7 +82,7 @@ interface::type() {
 }
 
 
-interface::trigger() {
+trigger() {
     local trigger="${1}"
 
     case "${trigger}" in
