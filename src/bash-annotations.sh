@@ -29,7 +29,7 @@ function import() {
 }
 
 
-trap_controller() {
+bash_annotations_trap_controller() {
     for func in "${BASH_ANNOTATIONS_FUNCTION_ARRAY[@]}"; do
         if type -t "${func}" 1> /dev/null; then
             ${func}
@@ -39,14 +39,13 @@ trap_controller() {
 
 
 set_bash_annotations_trap() {
-    builtin trap "trap_controller" DEBUG
+    builtin trap "bash_annotations_trap_controller" DEBUG
 }
 
 
 @setup() {
     # functrace has to be turned off to avoid superfluous function calls from
     # trap_controller()
-    set +o functrace
     set -o history
     set_bash_annotations_trap
 }
