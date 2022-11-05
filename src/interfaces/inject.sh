@@ -18,11 +18,11 @@ import util/utility.sh
         get_annotated_function_body "function_body" "${source_file}"
 
         if [[ -n "${function_body}" ]]; then
-            if [[ "${location}" == "pre" ]]; then
+            if [[ "${location}" == "PRE" ]]; then
                 pre="${function_body}"            
-            elif [[ "${location}" == "post" ]]; then
+            elif [[ "${location}" == "POST" ]]; then
                 post="${function_body}"
-            elif [[ "${location}" == "prepost" ]]; then
+            elif [[ "${location}" == "PREPOST" ]]; then
                 pre="${function_body}"            
                 post="${function_body}"
             fi
@@ -67,13 +67,13 @@ injection_location() {
     local trigger="${1}"
 
     case "${trigger}" in
-        "pre")
+        "PRE")
             return 0
         ;;
-        "post")
+        "POST")
             return 0 
         ;;
-        "prepost")
+        "PREPOST")
             return 0 
         ;;
         *)

@@ -44,8 +44,6 @@ set_bash_annotations_trap() {
 
 
 @setup() {
-    # functrace has to be turned off to avoid superfluous function calls from
-    # trap_controller()
     set -o history
     set_bash_annotations_trap
 }

@@ -10,31 +10,31 @@ import util/utility.sh
     local annotation_target
     local source_file="$(realpath "${BASH_SOURCE[1]}")"
 
-    if [[ "${type}" == "function" ]]; then
+    if [[ "${type}" == "FUNCTION" ]]; then
         get_annotated_target="get_annotated_function" 
-    elif [[ "${type}" == "variable" ]]; then
+    elif [[ "${type}" == "VARIABLE" ]]; then
         : # TODO: variable stuff        
     fi
 
     annotation_target="$(${get_annotated_target} "${source_file}")"
     if [[ -n "${annotation_target}" ]]; then
 
-        if [[ "${type}" == "function" ]]; then
+        if [[ "${type}" == "FUNCTION" ]]; then
             
             local function_body
             get_annotated_function_body "function_body" "${source_file}"
 
             if [[ -n "${function_body}" ]]; then
                 
-                if [[ "${trigger}" == "pre" ]]; then
+                if [[ "${trigger}" == "PRE" ]]; then
                     
                     _build_function_pre "${annotation_target}" "${function_body}"
 
-                elif [[ "${trigger}" == "post" ]]; then
+                elif [[ "${trigger}" == "POST" ]]; then
 
                     _build_function_post "${annotation_target}" "${function_body}"
 
-                elif [[ "${trigger}" == "prepost" ]]; then
+                elif [[ "${trigger}" == "PREPOST" ]]; then
                 
                     _build_function_prepost "${annotation_target}" "${function_body}"
                 
@@ -179,10 +179,10 @@ annotated_type() {
     local type="${1}"
 
     case "${type}" in
-        "function")
+        "FUNCTION")
             return 0
         ;;
-        "variable")
+        "VARIABLE")
             return 0 
         ;;
         *)
@@ -196,13 +196,13 @@ trigger() {
     local trigger="${1}"
 
     case "${trigger}" in
-        "pre")
+        "PRE")
             return 0
         ;;
-        "post")
+        "POST")
             return 0 
         ;;
-        "prepost")
+        "PREPOST")
             return 0 
         ;;
         *)
