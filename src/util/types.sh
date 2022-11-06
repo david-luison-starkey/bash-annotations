@@ -1,5 +1,5 @@
 
-get_variable_type() {
+_check_variable_type() {
     local variable="${1}"
     local type_assertion="${2}"
     local type_signature="$(declare -p "${variable}" 2> /dev/null)"
@@ -24,7 +24,7 @@ get_variable_type() {
 }
 
 
-get_command_type() {
+_check_command_type() {
     local type="${1}" 
     local type_assertion="${2}"
     local type_signature=$(type -t "${type}")
@@ -45,11 +45,11 @@ get_command_type() {
 }
 
 
-get_type() {
+check_type() {
     local type="${1}" 
     local type_assertion="${2}"
 
-    get_variable_type "${type}" "${type_assertion}" || \
-    get_command_type "${type}" "${type_assertion}" || \
+    _check_variable_type "${type}" "${type_assertion}" || \
+    _check_command_type "${type}" "${type_assertion}" || \
     return 1
 }

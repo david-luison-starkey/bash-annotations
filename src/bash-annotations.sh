@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 declare -gax BASH_ANNOTATIONS_IMPORT_ARRAY
 declare -gax BASH_ANNOTATIONS_FUNCTION_ARRAY

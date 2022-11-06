@@ -26,7 +26,7 @@ import util/utility.sh
                 pre="${function_body}"            
                 post="${function_body}"
             fi
-            { source /dev/fd/999 ; } 999<<-DECLARE_ANNOTATION_FUNCTION
+            { source /dev/fd/999 ; } 999<<-DECLARE_INJECTION_ANNOTATION_FUNCTION
             @${annotated_function}() {
                 local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
                 local source_file="\$(realpath "\${BASH_SOURCE[1]}")"
@@ -34,7 +34,7 @@ import util/utility.sh
 
                 if [[ -n "\${injection_annotated_function}" ]]; then
 
-                    { builtin source /dev/fd/999 ; } 999<<-DECLARE_NAMESPACE_FUNCTION
+                    { builtin source /dev/fd/999 ; } 999<<-DECLARE_INJECTION_ANNOTATION_FUNCTION_NAMESPACE
                         \${function_namespace}() {
                             if ${listener}; then
                                 func_body=\\\$(declare -f \$injection_annotated_function)
@@ -43,21 +43,21 @@ import util/utility.sh
 
                                 { builtin source /dev/fd/999 ; } 999<<-DECLARE_INJECTED_FUNCTION
                                 \${injection_annotated_function}() {
-                                    ${pre:-}
+                                    ${pre}
                                     \\\${func_body}
-                                    ${post:-}
+                                    ${post}
                                 }
 DECLARE_INJECTED_FUNCTION
                             ${remove}
                             fi
                         }
-DECLARE_NAMESPACE_FUNCTION
+DECLARE_INJECTION_ANNOTATION_FUNCTION_NAMESPACE
                         BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${function_namespace}")
                 else
                     return 1
                 fi
             }
-DECLARE_ANNOTATION_FUNCTION
+DECLARE_INJECTION_ANNOTATION_FUNCTION
         fi
     fi
 }
