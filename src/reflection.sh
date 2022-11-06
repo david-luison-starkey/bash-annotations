@@ -46,7 +46,15 @@ get_annotated_function_body() {
     local end_of_function_pattern="^\s*\}\s*$"
     local annotations_pattern="^\s*@[a-zA-Z:./_-]+\s*.*[\r\n]?$"
     local comment_pattern="^\s*#.*$"
+    # Reseved variable patterns that are not escaped (as with other variables used in a function). 
+    # This allows functions to leverage bash-annotations specific variables
     local reserved_namespace_annotated_function="\${annotated_function}"
+    local reserved_namespace_annotated_variable="\${annotated_variable}"
+    # Argument variables are not escaped to allow new annotations to be declared with parameters
+    local positional_parameters_pattern="\$[1-9]"
+    local positional_parameters_pattern_braces="\${[1-9]"
+    local array_parameter_pattern="\$@"
+    local array_parameter_pattern_braces="\${@"
 
     while IFS= read -r line; do
         ((counter++))
@@ -69,7 +77,12 @@ get_annotated_function_body() {
     for line in "${function_body_array[@]}"; do
         if [[ "${FUNCNAME[1]}" == "@inject" ]]; then
             function_body_string+="$(trim "${line//\$/\\\\\\$}")"
-        elif [[ "${line}" == *"${reserved_namespace_annotated_function}"* ]]; then
+        elif [[ "${line}" == *"${reserved_namespace_annotated_function}"* ]] || \
+        [[ "${line}" == *"${reserved_namespace_annotated_variable}"* ]] || \
+        [[ "${line}" == *${positional_parameters_pattern}* ]] || \
+        [[ "${line}" == *${positional_parameters_pattern_braces}* ]] || \
+        [[ "${line}" == *"${array_parameter_pattern}"* ]] || \
+        [[ "${line}" == *"${array_parameter_pattern_braces}"* ]]; then
             function_body_string+="$(trim "${line}")"
         else
             function_body_string+="$(trim "${line//\$/\\$}")"
