@@ -13,7 +13,7 @@ timer() {
     elif invoke_function_annotation_post "${annotated_function}" && \
     [[ -n "${bash_annotations_timer_start}" ]]; then
         bash_annotations_timer_end=$(date -u +%s.%N)
-        printf "%s runtime: " ${annotated_function}
+        printf "%s() runtime: " "${annotated_function}"
         printf "%0.4f seconds\n" "$(bc -q <<< "scale=4; $bash_annotations_timer_end - $bash_annotations_timer_start")"
         unset timer_start
         unset timer_end
