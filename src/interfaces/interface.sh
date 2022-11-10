@@ -36,7 +36,19 @@ import util/utility.sh
         
             elif [[ "${type}" == "VARIABLE" ]]; then
 
-                _build_variable_annotation "${annotation_target}" "${function_body}" "${trigger}"
+                if [[ "${trigger}" == "PRE" ]]; then
+
+                    _build_variable_annotation_pre "${annotation_target}" "${function_body}"
+
+                elif [[ "${trigger}" == "POST" ]]; then
+
+                    _build_variable_annotation_post "${annotation_target}" "${function_body}"
+
+                elif [[ "${trigger}" == "PREPOST" ]]; then
+
+                    _build_variable_annotation_prepost "${annotation_target}" "${function_body}"
+
+                fi
 
             else
                 return 1
@@ -174,19 +186,9 @@ DECLARE_FUNCTION_ANNOTATION_PREPOST
 }
 
 
-_build_variable_annotation() {
+_build_variable_annotation_pre() {
     local annotation_target="${1}" 
     local function_body="${2}"  
-    local trigger="${3}"
-    local listener
-
-    if [[ "${trigger}" == "PRE" ]]; then 
-        listener="invoke_variable_annotation_pre \$annotated_variable" 
-    elif [[ "${trigger}" == "POST" ]]; then 
-        listener="invoke_variable_annotation_post \$annotated_variable" 
-    elif [[ "${trigger}" == "PREPOST" ]]; then 
-        listener="invoke_variable_annotation_pre \$annotated_variable || invoke_variable_annotation_post \$annotated_variable" 
-    fi    
 
     { builtin source /dev/fd/999 ; } 999<<-DECLARE_VARIABLE_ANNOTATION_PRE 
     @${annotation_target}() {
@@ -196,9 +198,47 @@ _build_variable_annotation() {
 
         if [[ -n "\${annotated_variable}" ]]; then
 
+            { builtin source /dev/fd/999 ; } 999<<-DECLARE_VARIABLE_NAMESPACE_ANNOTATION_PRE
+            \${function_namespace}() {
+                if invoke_variable_annotation_pre \$annotated_variable; then
+                    ${function_body}
+                fi
+            }
+DECLARE_VARIABLE_NAMESPACE_ANNOTATION_PRE
+            BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${function_namespace}")
+        else
+            return 1
+        fi
+    }
+DECLARE_VARIABLE_ANNOTATION_PRE
+}
+
+
+_build_variable_annotation_post() {
+    local annotation_target="${1}" 
+    local function_body="${2}"  
+
+    { builtin source /dev/fd/999 ; } 999<<-DECLARE_VARIABLE_ANNOTATION_POST 
+    @${annotation_target}() {
+        local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
+        local source_file="$(realpath "\${BASH_SOURCE[1]}")"
+        local annotated_variable="\$(get_annotated_variable "\${source_file}")"
+
+        eval "declare -gx \${function_namespace#@*}_post=false"
+
+        if [[ -n "\${annotated_variable}" ]]; then
+
             { builtin source /dev/fd/999 ; } 999<<-DECLARE_VARIABLE_NAMESPACE_ANNOTATION_POST
             \${function_namespace}() {
-                if ${listener}; then
+
+                local annotated_variable_post_delayed_trigger=\${function_namespace#@*}_post
+
+                if invoke_variable_annotation_pre \$annotated_variable && \
+                [[ \\\${!annotated_variable_post_delayed_trigger} == "false" ]]; then
+                    eval "\${function_namespace#@*}_post=true"
+                elif ! invoke_variable_annotation_pre \$annotated_variable && \
+                [[ \\\${!annotated_variable_post_delayed_trigger} == "true" ]]; then
+                    eval "\${function_namespace#@*}_post=false"
                     ${function_body}
                 fi
             }
@@ -208,7 +248,50 @@ DECLARE_VARIABLE_NAMESPACE_ANNOTATION_POST
             return 1
         fi
     }
-DECLARE_VARIABLE_ANNOTATION_PRE
+DECLARE_VARIABLE_ANNOTATION_POST
+}
+
+
+
+_build_variable_annotation_prepost() {
+    local annotation_target="${1}" 
+    local function_body="${2}"  
+
+    { builtin source /dev/fd/999 ; } 999<<-DECLARE_VARIABLE_ANNOTATION_PREPOST 
+    @${annotation_target}() {
+        local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
+        local source_file="$(realpath "\${BASH_SOURCE[1]}")"
+        local annotated_variable="\$(get_annotated_variable "\${source_file}")"
+
+        eval "declare -gx \${function_namespace#@*}_post=false"
+
+        if [[ -n "\${annotated_variable}" ]]; then
+
+            { builtin source /dev/fd/999 ; } 999<<-DECLARE_VARIABLE_NAMESPACE_ANNOTATION_PREPOST
+            \${function_namespace}() {
+
+                local annotated_variable_post_delayed_trigger=\${function_namespace#@*}_post
+
+                if invoke_variable_annotation_pre \$annotated_variable && \
+                [[ \\\${!annotated_variable_post_delayed_trigger} == "false" ]]; then
+                    eval "\${function_namespace#@*}_post=true"
+                    ${function_body}
+                elif invoke_variable_annotation_pre \$annotated_variable && \
+                [[ \\\${!annotated_variable_post_delayed_trigger} == "true" ]]; then
+                    ${function_body}
+                elif ! invoke_variable_annotation_pre \$annotated_variable && \
+                [[ \\\${!annotated_variable_post_delayed_trigger} == "true" ]]; then
+                    eval "\${function_namespace#@*}_post=false"
+                    ${function_body}
+                fi
+            }
+DECLARE_VARIABLE_NAMESPACE_ANNOTATION_PREPOST
+            BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${function_namespace}")
+        else
+            return 1
+        fi
+    }
+DECLARE_VARIABLE_ANNOTATION_PREPOST
 }
 
 
