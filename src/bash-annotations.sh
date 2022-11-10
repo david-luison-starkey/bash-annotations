@@ -44,6 +44,7 @@ set_bash_annotations_trap() {
 
 
 @setup() {
+    set -o functrace
     set -o history
     set_bash_annotations_trap
 }
