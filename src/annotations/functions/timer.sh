@@ -14,8 +14,8 @@ timer() {
     [[ -n "${bash_annotations_timer_start}" ]]; then
         bash_annotations_timer_end=$(date -u +%s.%N)
         printf "%s() runtime: " "${annotated_function}"
-        printf "%0.4f seconds\n" "$(bc -q <<< "scale=4; $bash_annotations_timer_end - $bash_annotations_timer_start")"
-        unset timer_start
-        unset timer_end
+        printf "%0.3f seconds\n" "$(bc -q <<< "scale=3; $bash_annotations_timer_end - $bash_annotations_timer_start")"
+        unset -v bash_annotations_timer_start
+        unset -v bash_annotations_timer_end
     fi
 }
