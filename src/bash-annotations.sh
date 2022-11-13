@@ -9,6 +9,8 @@ declare -gx BASH_ANNOTATIONS_PROJECT_BASE_DIRECTORY="$(dirname "$(realpath "${BA
 function import() {
     local to_source=("${@}")
 
+    # Internal function to check if item is in array. 
+    # Avoids external dependency on util/utility.sh is_element_in_array()
     _is_imported() {
         local import_requested="${1}"
         for imported in "${BASH_ANNOTATIONS_IMPORT_ARRAY[@]}"; do
@@ -28,9 +30,10 @@ function import() {
     done
 }
 
-
+# Loops through global array that stores functions created by annotations
 bash_annotations_trap_controller() {
     for func in "${BASH_ANNOTATIONS_FUNCTION_ARRAY[@]}"; do
+        # Basic sanity check to ensure function exists
         if type -t "${func}" 1> /dev/null; then
             ${func}
         fi
@@ -43,10 +46,10 @@ set_bash_annotations_trap() {
 }
 
 
-@setup() {
+bash_annotations_setup() {
     set -o functrace
     set -o history
     set_bash_annotations_trap
 }
 
-@setup
+bash_annotations_setup

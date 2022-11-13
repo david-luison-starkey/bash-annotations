@@ -37,7 +37,7 @@ import util/utility.sh
                     { builtin source /dev/fd/999 ; } 999<<-DECLARE_INJECTION_ANNOTATION_FUNCTION_NAMESPACE
                         \${function_namespace}() {
                             if ${listener}; then
-                                func_body=\\\$(declare -f \$injection_annotated_function)
+                                func_body="\\\$(declare -f \$injection_annotated_function)"
                                 func_body="\\\${func_body#*{}"
                                 func_body="\\\${func_body%\}}"
 
