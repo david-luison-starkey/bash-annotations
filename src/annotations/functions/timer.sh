@@ -2,19 +2,18 @@ import interfaces/interface.sh
 
 
 @interface FUNCTION PREPOST
-# https://unix.stackexchange.com/questions/314365/get-elapsed-time-in-bash 
+# Return seconds as float: https://unix.stackexchange.com/questions/314365/get-elapsed-time-in-bash 
 timer() {
     declare -gx bash_annotations_timer_start
     declare -gx bash_annotations_timer_end
 
-    if invoke_function_annotation_pre "${annotated_function}" && \
-    [[ -z "${bash_annotations_timer_start}" ]]; then
+    if [[ -z "${bash_annotations_timer_start}" ]]; then
         bash_annotations_timer_start=$(date -u +%s.%N)
-    elif invoke_function_annotation_post "${annotated_function}" && \
-    [[ -n "${bash_annotations_timer_start}" ]]; then
+    elif [[ -n "${bash_annotations_timer_start}" ]]; then
         bash_annotations_timer_end=$(date -u +%s.%N)
         printf "%s() runtime: " "${annotated_function}"
         printf "%0.3f seconds\n" "$(bc -q <<< "scale=3; $bash_annotations_timer_end - $bash_annotations_timer_start")"
+        # Unset global variables for use by other annotated functions
         unset -v bash_annotations_timer_start
         unset -v bash_annotations_timer_end
     fi
