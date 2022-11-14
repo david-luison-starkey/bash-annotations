@@ -2,7 +2,8 @@
 
 declare -gax BASH_ANNOTATIONS_IMPORT_ARRAY
 declare -gax BASH_ANNOTATIONS_FUNCTION_ARRAY
-declare -gx BASH_ANNOTATIONS_PROJECT_BASE_DIRECTORY="$(dirname "$(realpath "${BASH_SOURCE[0]}")")/"
+# Ensure variable is always set to project src/ directory: https://stackoverflow.com/a/17744637
+declare -gx BASH_ANNOTATIONS_PROJECT_BASE_DIRECTORY="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)/"
 
 
 # Basic import function intended to be used internally by project

@@ -6,7 +6,6 @@ import util/utility.sh
     annotated_type "${1:-}" && local type="${1}" || return 1
     trigger "${2:-}" && local trigger="${2}" || return 1
 
-    local get_annotated_target
     local annotation_target
     local source_file="$(realpath "${BASH_SOURCE[1]}")"
 
