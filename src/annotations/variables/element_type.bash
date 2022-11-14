@@ -1,5 +1,5 @@
-import interfaces/interface.sh 
-import util/types.sh
+import interfaces/interface.bash 
+import util/types.bash
 
 
 @interface VARIABLE PRE

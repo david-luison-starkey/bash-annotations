@@ -1,4 +1,4 @@
-import interfaces/inject.sh
+import interfaces/inject.bash
 
 
 @inject PREPOST

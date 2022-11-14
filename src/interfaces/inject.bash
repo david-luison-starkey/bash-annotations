@@ -1,5 +1,5 @@
-import reflection.sh
-import util/utility.sh
+import reflection.bash
+import util/utility.bash
 
 
 @inject() {

@@ -1,4 +1,4 @@
-import interfaces/interface.sh 
+import interfaces/interface.bash 
 
 
 @interface FUNCTION PRE

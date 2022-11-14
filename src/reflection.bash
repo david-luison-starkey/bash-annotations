@@ -1,4 +1,4 @@
-import util/utility.sh
+import util/utility.bash
 
 
 get_annotated_function() {
