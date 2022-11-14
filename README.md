@@ -27,7 +27,7 @@ The annotation form of the function can then be used to annotate other functions
 
 `bash-annotations` annotations are designed to be placed above their target types.
 
-Interveninng lines between an annotation and its target ignore comments and other annotations. 
+Intervening lines between an annotation and its target ignore comments and other annotations. 
 
 Empty lines and any other content interfere with an annotation's ability to locate its target, causing the annotation (either custom or interface) to return a non-zero exit code.
 
