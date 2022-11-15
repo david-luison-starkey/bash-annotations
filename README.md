@@ -27,7 +27,7 @@ The annotation form of the function can then be used to annotate other functions
 
 Start by sourcing `bash-annotations.bash` into a script. This provides the foundation on which `bash-annotations` operates.
 
-The desired interface can then be sourced (or use the project-specific `import()` function) to annotate your functions, in turn creating custom annotations.
+The desired interface can then be sourced (or use the project-specific `import()`) from `interfaces/`. @inject or @interface can then be used to annotate your functions, in turn creating custom annotations.
 
 `bash-annotations` annotations are designed to be placed above their target types.
 
