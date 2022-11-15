@@ -16,14 +16,18 @@
 ---
 ## Introduction
 
-`bash-annotations` provides interfaces for definiting `Java`-esque annotations that can then be used in your `Bash` scripts.
+`bash-annotations` provides functions for definiting `Java`-esque annotations that can then be used in your `Bash` scripts.
 
-Declaring an annotation is as simple as annotating a function with `@interface` or `@inject`.
+Declaring an annotation is as simple as annotating a function with `@interface` or `@inject`. This produces an annotation version of that function (following the convention @ + the function name).
 
 The annotation form of the function can then be used to annotate other functions or variables (depending on the annotation's target type).
 
 ---
 ## Usage
+
+Start by sourcing `bash-annotations.bash` into a script. This provides the foundation on which `bash-annotations` operates.
+
+The desired interface can then be sourced (or use the project-specific `import()` function) to annotate your functions, in turn creating custom annotations.
 
 `bash-annotations` annotations are designed to be placed above their target types.
 
@@ -60,7 +64,7 @@ local variable="100"
 
 ## Interfaces
 
-`bash-annotations` provides two functions that act as an interface, abstracting complexity and allowing easy-creation of custom annotations.
+`bash-annotations` provides two functions that act as interfaces, abstracting complexity and allowing easy-creation of custom annotations.
 
 Both interfaces take arguments that determine the behaviour of the annotation they are declaring. 
 
@@ -76,9 +80,9 @@ Annotations created with @interface can target functions or variables, and be se
 
 @interface takes two arguments, target type and trigger condition.
 
-Target type can be either: FUNCTION or VARIABLE
+Target type argument can be either: FUNCTION or VARIABLE
 
-Trigger condition can be either: PRE, POST, or PREPOST
+Trigger condition argument can be either: PRE, POST, or PREPOST
 
 ```bash
 @interface FUNCTION POST
@@ -104,7 +108,7 @@ call_count() {
 }
 
 @call_count
-local variable="Counting"
+declare variable="Counting"
 
 echo "${variable}: "
 echo "${VARIABLE_COUNT}"
@@ -125,9 +129,9 @@ Annotations created via @inject can only annotate functions.
 
 Annotations created with @inject can inject their body before, after, or before and after the annotated function's body.
 
-@inject takes one argument, the trigger conditon.
+@inject takes one argument, the injection location.
 
-Trigger condition can be either: PRE, POST, or PREPOST
+Injection location argument can be either: PRE, POST, or PREPOST
 
 ```bash
 @inject PRE
@@ -144,6 +148,7 @@ target_function
 declare -f target_function
 
 # Output: 
+# /home/${user}
 # target_function()
 # {
 #   cd "${HOME}";
@@ -153,16 +158,24 @@ declare -f target_function
 ---
 ## How does it work?
 
-Interface annotations make use of the DEBUG `trap` that iterates through the `${BASH_ANNOTATIONS_FUNCTION_ARRAY}` which stores declared annotations.
+Interface functions create a copy of the functions they annotate (@ + the function name). The original function is unaffected and may be used as per normal `Bash` function use.
 
-`${BASH_COMMAND}` and `history` are used to listen for annotation trigger conditions. 
+The annotation is built by interface functions with the ability to find the type they themselves annotate. 
 
-Pre, post, or pre and post trigger conditions are determined by arguments passed to the interface annotation.
+When an annotation is used to annotate a type, a function with a unique namespace is added to the `${BASH_ANNOTATIONS_FUNCTION_ARRAY}`.
+
+Functions in this array are looped through by `bash_annotations_trap_controller()` stored in the DEBUG `trap`.
+
+`${BASH_COMMAND}` and `history` are used to listen for a function's trigger condition/s. 
+
+Pre, post, or pre and post trigger conditions are determined by an interface function.
+
+These features are all determined at runtime via introspection. Unfortunately - but perhaps unsurprisingly - this leads to extended script execution.
 
 ---
 ## Special variables
 
-`bash-annotations` special variables can be accessed when declaring custom annotations.
+`bash-annotations` special variables can be used when declaring custom annotations.
 
 Special variables are:
 
@@ -178,7 +191,7 @@ Special variables are unique to each annotation and its target.
 
 * Annotations with a POST trigger condition will not be invoked if the annotated type is called at the very end of the script (as the POST listeners require some other command being invoked to detect the prior invocation of the target type).
 
-* Only one @inject annotation can annotate a function. This is because the last @inject listed annotation will override previous injections (as @inject re-declares the annoated function with the injected code). 
+* Only one @inject annotation can annotate a function. This is a bug. 
 ```bash
 # This will be overriden by the annotation below it
 @override_injection
@@ -188,7 +201,7 @@ target_function() {
     :
 }
 ```
-* @inject and @interface annotations cannot annotate the same function. Multiple @interface annotations can be used to annotate a function or variable however.
+* @inject and @interface annotations only function together if the @inject annotation is the last annotation. This is a bug. Multiple @interface annotations can be used to annotate a function or variable without any constraints however.
 
 * Special variables must not exist on the same line as any other variable or command substitution etc. (as conditional logic applies to escaping the '$' symbol, where special variables are escaped differently). Backslashes can be used to split statements up over multiple lines to allow `bash-annotations` interfaces to parse lines correctly.
 
@@ -204,7 +217,7 @@ function_annotation() {
     fi
 }
 ```
-* Special variable values can be correctly accessed via indirection.
+* Special variable values can be accessed via indirection (as opposed to calling the special variable itself).
 
 ```bash
 @interface VARIABLE PRE
@@ -217,6 +230,9 @@ variable_annotation_value() {
     fi
 }
 ```
+
+* No logging or error messaging exist at present. Errors (such as an annotation failing to find a target type) will fail silently, however all functions in `bash-annotations` return either a 0 or 1 exit code based on success or failure.
+
 ---
 ## Pre-defined annotations
 `bash-annotations` comes with pre-defined, ready-to-use annotations.
@@ -233,7 +249,7 @@ User defined annotations can be stored within `bash-annotations/src/` to make us
 * Optimisation (too many annotations leads to prolonged runtime, particularly due to `-o functrace`)
 * Move regex patterns into separate files for less duplicated code and easier testability
 * Add/improve docstrings
-* Implemenet additional pre-defined annotations
+* Implement additional pre-defined annotations
 * Comprehensive `bats` and custom integration tests (`bats` does not appear to play nice with `bash-annotations` implementation)
 * Project specific logging
 
