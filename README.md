@@ -22,6 +22,8 @@ Declaring an annotation is as simple as annotating a function with `@interface` 
 
 The annotation form of the function can then be used to annotate other functions or variables (depending on the annotation's target type).
 
+`bash-annotations` was developed with `Bash` version `5.0.17`. No effort has been made to ensure the project is compatible with older versions of `Bash` (although more recent features, such as associative arrays, are not used by the project).
+
 ---
 ## Usage
 
