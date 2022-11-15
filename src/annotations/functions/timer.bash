@@ -3,6 +3,8 @@ import interfaces/interface.bash
 
 @interface FUNCTION PREPOST
 # Return seconds as float: https://unix.stackexchange.com/questions/314365/get-elapsed-time-in-bash 
+#
+# Parameters: None
 timer() {
     declare -gx bash_annotations_timer_start
     declare -gx bash_annotations_timer_end
