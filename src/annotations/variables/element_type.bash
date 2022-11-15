@@ -23,11 +23,11 @@ import util/types.bash
 # Example:
 # 
 # 
-# declare -a example_array 
+# declare -i example_integer 
 # 
 # example_function() {
 # 
-# @element_type ARRAY 
+# @element_type INTEGER 
 # local variable="${1}"
 # 
 # }
