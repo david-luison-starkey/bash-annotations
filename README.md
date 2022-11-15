@@ -31,7 +31,7 @@ The desired interface can then be sourced (or use the project-specific `import()
 
 `bash-annotations` annotations are designed to be placed above their target types.
 
-Interveninng lines between an annotation and its target ignore comments and other annotations. 
+Intervening lines between an annotation and its target ignore comments and other annotations. 
 
 Empty lines and any other content interfere with an annotation's ability to locate its target, causing the annotation (either custom or interface) to return a non-zero exit code.
 
