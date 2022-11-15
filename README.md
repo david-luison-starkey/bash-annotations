@@ -193,18 +193,6 @@ Special variables are unique to each annotation and its target.
 
 * Annotations with a POST trigger condition will not be invoked if the annotated type is called at the very end of the script (as the POST listeners require some other command being invoked to detect the prior invocation of the target type).
 
-* Only one @inject annotation can annotate a function. This is a bug. 
-```bash
-# This will be overriden by the annotation below it
-@override_injection
-# Since this is the last annotation, it takes precedence
-@this_will_inject 
-target_function() {
-    :
-}
-```
-* @inject and @interface annotations only function together if the @inject annotation is the last annotation. This is a bug. Multiple @interface annotations can be used to annotate a function or variable without any constraints however.
-
 * Special variables must not exist on the same line as any other variable or command substitution etc. (as conditional logic applies to escaping the '$' symbol, where special variables are escaped differently). Backslashes can be used to split statements up over multiple lines to allow `bash-annotations` interfaces to parse lines correctly.
 
 ```bash

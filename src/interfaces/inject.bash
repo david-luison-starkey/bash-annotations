@@ -9,7 +9,7 @@ import util/utility.bash
     local post
 
     local remove="remove_element_from_array \${function_namespace} BASH_ANNOTATIONS_FUNCTION_ARRAY"
-    local listener="invoke_function_annotation_pre \$annotated_function"
+    local listener="invoke_function_annotation_pre \$injection_annotated_function"
     local source_file="$(realpath "${BASH_SOURCE[1]}")"
     local annotated_function="$(get_annotated_function "${source_file}")"
 
