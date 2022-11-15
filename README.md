@@ -58,7 +58,7 @@ target_function() {
 
 @annotation
 
-local variable="100"
+declare variable="100"
 
 ```
 
