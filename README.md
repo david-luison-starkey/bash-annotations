@@ -66,7 +66,7 @@ declare variable="100"
 
 ## Interfaces
 
-`bash-annotations` provides two functions that act as interfaces, abstracting complexity and allowing easy-creation of custom annotations.
+`bash-annotations` provides two functions that act as interfaces, abstracting complexity and affording the easy creation of custom annotations.
 
 Both interfaces take arguments that determine the behaviour of the annotation they are declaring. 
 
