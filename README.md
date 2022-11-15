@@ -183,8 +183,8 @@ Special variables are:
 
 | Variable | Value |
 |----------|-------|
-| annotated_function | Name of annotated function for an @annotation() | 
-| annotated_variable | Name of annotated variable an @annotation() | 
+| annotated_function | Name of the annotated function | 
+| annotated_variable | Name of the annotated variable | 
 
 Special variables are unique to each annotation and its target.
 
