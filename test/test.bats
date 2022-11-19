@@ -5,14 +5,14 @@ setup() {
     load 'test_helper'
     _common_setup
     source "${BATS_TEST_DIRNAME}/../src/bash-annotations.bash"
-    run source "${BATS_TEST_DIRNAME}/../src/bash-annotations.bash"
 }
 
-@test 'bash-annotations.sh is runnable' {
+@test "bash-annotations.bash is executable" {
     bash-annotations.bash
 }
 
 @test "Confirm correct bash_annotations_setup()" {
+    run source "${BATS_TEST_DIRNAME}/../src/bash-annotations.bash"
     eval '[ -o history ]'
     assert_success
     eval '[ -o functrace ]'
