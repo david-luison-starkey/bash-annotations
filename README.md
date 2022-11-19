@@ -37,11 +37,8 @@ Intervening lines between an annotation and its target ignore comments and other
 
 Empty lines and any other content interfere with an annotation's ability to locate its target, causing the annotation (either custom or interface) to return a non-zero exit code.
 
+Correct usage:
 ```bash
-# e.g.:
-
-# Correct usage:
-
 @one
 # @two 
 @three
@@ -53,11 +50,9 @@ Empty lines and any other content interfere with an annotation's ability to loca
 target_function() {
     echo "Hello world"
 }
-
------------------------
-
-# Incorrect usage:
-
+```
+Incorrect usage:
+```bash
 @annotation
 
 declare variable="100"
@@ -114,13 +109,17 @@ declare variable="Counting"
 
 echo "${variable}: "
 echo "${VARIABLE_COUNT}"
-# Counting:
-# 2
 cd ../
 echo "${variable}: "
 echo "${VARIABLE_COUNT}"
-# Counting:
-# 4
+```
+
+Output:
+```
+Counting:
+2
+Counting:
+4
 ```
 
 ## @inject
@@ -148,14 +147,16 @@ target_function() {
 
 target_function
 declare -f target_function
+```
 
-# Output: 
-# /home/${user}
-# target_function()
-# {
-#   cd "${HOME}";
-#   pwd 
-# }
+Output: 
+```
+/home/${user}
+target_function()
+{
+  cd "${HOME}";
+  pwd 
+}
 ```
 ---
 ## How does it work?
