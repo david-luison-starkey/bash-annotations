@@ -22,6 +22,7 @@ import interfaces/inject.bash
 @inject PRE
 get() {
     local url="\${1}"
+    local non_argument_variable="Hello world"
 }
 
  
@@ -32,8 +33,9 @@ sanitise_annotation_variable() {
 
 @get "www.google.com"
 annotation_target() {
-   local var="$(sanitise_annotation_variable "${url}")"
+    local var="$(sanitise_annotation_variable "${url}")"
     curl -I --request GET "${var}"
+    echo "${non_argument_variable}"
 }
 
 annotation_target
