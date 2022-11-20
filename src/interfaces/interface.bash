@@ -294,6 +294,7 @@ DECLARE_VARIABLE_ANNOTATION_PREPOST
 }
 
 
+# Defines valid annotation target type arguments for @interface
 annotated_type() {
     local type="${1}"
 
@@ -311,6 +312,7 @@ annotated_type() {
 }
 
 
+# Defines valid annotation trigger condition arguments for @interface
 trigger() {
     local trigger="${1}"
 

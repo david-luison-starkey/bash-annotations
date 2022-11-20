@@ -9,7 +9,7 @@ import util/utility.bash
     local post
 
     local remove="remove_element_from_array \${function_namespace} BASH_ANNOTATIONS_FUNCTION_ARRAY"
-    local listener="invoke_function_annotation_pre \$injection_annotated_function"
+    local listener="invoke_function_annotation_pre \$inject_annotated_function"
     local source_file="$(realpath "${BASH_SOURCE[1]}")"
     local annotated_function="$(get_annotated_function "${source_file}")"
 
@@ -26,47 +26,48 @@ import util/utility.bash
                 pre="${function_body}"            
                 post="${function_body}"
             fi
-            { source /dev/fd/999 ; } 999<<-DECLARE_INJECTION_ANNOTATION_FUNCTION
+            { source /dev/fd/999 ; } 999<<-DECLARE_INJECT_ANNOTATION_FUNCTION
             @${annotated_function}() {
                 local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
                 local source_file="\$(realpath "\${BASH_SOURCE[1]}")"
-                local injection_annotated_function="\$(get_annotated_function "\${source_file}")"
+                local inject_annotated_function="\$(get_annotated_function "\${source_file}")"
 
-                if [[ -n "\${injection_annotated_function}" ]]; then
+                if [[ -n "\${inject_annotated_function}" ]]; then
 
-                    { builtin source /dev/fd/999 ; } 999<<-DECLARE_INJECTION_ANNOTATION_FUNCTION_NAMESPACE
+                    { builtin source /dev/fd/999 ; } 999<<-DECLARE_INJECT_ANNOTATION_FUNCTION_NAMESPACE
                         \${function_namespace}() {
                             if ${listener}; then
-                                func_body="\\\$(declare -f \$injection_annotated_function)"
-                                func_body="\\\${func_body#*{}"
-                                func_body="\\\${func_body%\}}"
+                                inject_annotated_function_body="\\\$(declare -f \$inject_annotated_function)"
+                                inject_annotated_function_body="\\\${inject_annotated_function_body#*{}"
+                                inject_annotated_function_body="\\\${inject_annotated_function_body%\}}"
 
                                 { builtin source /dev/fd/999 ; } 999<<-DECLARE_INJECTED_FUNCTION
-                                \${injection_annotated_function}() {
+                                \${inject_annotated_function}() {
                                     ${pre}
-                                    \\\${func_body}
+                                    \\\${inject_annotated_function_body}
                                     ${post}
                                 }
 DECLARE_INJECTED_FUNCTION
                             ${remove}
                             fi
                         }
-DECLARE_INJECTION_ANNOTATION_FUNCTION_NAMESPACE
+DECLARE_INJECT_ANNOTATION_FUNCTION_NAMESPACE
                         BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${function_namespace}")
                 else
                     return 1
                 fi
             }
-DECLARE_INJECTION_ANNOTATION_FUNCTION
+DECLARE_INJECT_ANNOTATION_FUNCTION
         fi
     fi
 }
 
 
+# Define valid location arguments for @inject
 injection_location() {
-    local trigger="${1}"
+    local location="${1}"
 
-    case "${trigger}" in
+    case "${location}" in
         "PRE")
             return 0
         ;;
