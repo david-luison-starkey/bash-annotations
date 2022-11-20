@@ -134,6 +134,9 @@ Annotations created with @inject can inject their body before, after, or before 
 
 Injection location argument can be either: PRE, POST, or PREPOST
 
+The first time an injection annotation detects its target function being invoked, then the listener function (which performs the injection) is consumed, and the target function is re-declared with the newly injected code.
+
+
 ```bash
 @inject PRE
 injection() {
@@ -171,7 +174,7 @@ Functions in this array are looped through by `bash_annotations_trap_controller(
 
 `${BASH_COMMAND}` and `history` are used to listen for a function's trigger condition/s. 
 
-Pre, post, or pre and post trigger conditions are determined by an interface function.
+Pre, post, or pre and post trigger conditions are determined by an interface function (@inject always uses a pre trigger condition).
 
 These features are all determined at runtime via introspection. Unfortunately - but perhaps unsurprisingly - this leads to extended script execution.
 
@@ -182,10 +185,11 @@ These features are all determined at runtime via introspection. Unfortunately - 
 
 Special variables are:
 
-| Variable | Value |
-|----------|-------|
-| annotated_function | Name of the annotated function | 
-| annotated_variable | Name of the annotated variable | 
+| Interface | Variable | Value |
+|-----------|----------|-------|
+| @interface | annotated_function | Name of the annotated function | 
+| @interface | annotated_variable | Name of the annotated variable | 
+| @inject | inject_annotated_function | Name of annotated function (to be injected) |
 
 Special variables are unique to each annotation and its target.
 
@@ -194,7 +198,7 @@ Special variables are unique to each annotation and its target.
 
 * Annotations with a POST trigger condition will not be invoked if the annotated type is called at the very end of the script (as the POST listeners require some other command being invoked to detect the prior invocation of the target type).
 
-* Special variables must not exist on the same line as any other variable or command substitution etc. (as conditional logic applies to escaping the '$' symbol, where special variables are escaped differently). Backslashes can be used to split statements up over multiple lines to allow `bash-annotations` interfaces to parse lines correctly.
+* Special variables must not exist on the same line as any other variable or command substitution etc. (as conditional logic applies to escaping the '$' symbol, where special variables are escaped differently). Backslashes can be used to split statements up over multiple lines to allow `bash-annotations` interfaces to parse lines correctly. This applies to both @inject and @interface.
 
 ```bash
 @interface FUNCTION POST
@@ -208,22 +212,50 @@ function_annotation() {
     fi
 }
 ```
-* Special variable values can be accessed via indirection (as opposed to calling the special variable itself).
+* Similarly, positional parameter variables must not exist on the same line as any other variable or command substition. Special variables and positional parameter variables can exist on the same line as each other however. This applies to both @inject and @interface.
+```bash
+@inject PRE
+injection() {
+    local argument="${1}"; echo "${inject_annotated_function}";
+    echo "${argument}"
+}
+
+@injection "First argument"
+target_function() {
+    :
+}
+
+target_function
+```
+Output:
+```
+target_function
+First argument
+```
+
+* Special variable values can be accessed directly within functions created by @interface and @inject. Functions annotated by @interface are unable to reference special variables in the annoating function's scope. Functions annotated by @inject can access "${inject_annotated_function}" by first assigning this variable to another variable within the annotation function, then referencing this variable in the injected function. 
 
 ```bash
-@interface VARIABLE PRE
-variable_annotation_value() {
-    local access_variable_value_via_indirection="${annotated_variable}"
-    if [[ "${!access_variable_value_via_indirection}" == "desired value" ]]; then
-        echo "Success"
-    else
-        echo "Failure"
-    fi
+@inject PRE
+make_special_variable_accessible() {
+    local access_variable_value="${inject_annotated_function}"
 }
+
+@make_special_variable_accessible
+target_function() {
+    echo "${access_variable_value}"
+}
+
+target_function
+```
+Output:
+```
+target_function
 ```
 
 * No logging or error messaging exist at present. Errors (such as an annotation failing to find a target type) will fail silently, however all functions in `bash-annotations` return either a 0 or 1 exit code based on success or failure.
 
+* @interface annotations persist for the duration of the script they are called in. This means that any checks made by these annotations (listening for their trigger conditions) are performed continuously, leading to extended script execution time. For this reason, it is recommended that @inject is favoured over @interface for function annotations (while @interface must be used for annotating variables).
 ---
 ## Pre-defined annotations
 `bash-annotations` comes with pre-defined, ready-to-use annotations.

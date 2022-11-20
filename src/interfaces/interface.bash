@@ -1,6 +1,7 @@
 import reflection.bash
 import util/utility.bash
 
+
 # @interface interface function.
 # Declares an annotation version of the function that it annotates.
 # This newly created function (declared at runtime) has the ability to detect
