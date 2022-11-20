@@ -199,6 +199,8 @@ Special variables are unique to each annotation and its target.
 
 * Annotations with a POST trigger condition will not be invoked if the annotated type is called at the very end of the script (as the POST listeners require some other command being invoked to detect the prior invocation of the target type).
 
+* While @interface annotations that target functions and @inject annotations work together (any number and combination of @interface FUNCTION and @inject annotations can be used on the same target function), @inject annotations do not play nicely with @inferface annotations that target variables within either the annotation itself, or the function the @inject annotation targets. As such, using @inject annotations with @interface VARIABLE annotations should be avoided. @interface FUNCTION and @interface VARIABLE annotations do not interfere with each other however and can be used on/within the same function.
+
 * Special variables must not exist on the same line as any other variable or command substitution etc. (as conditional logic applies to escaping the '$' symbol, where special variables are escaped differently). Backslashes can be used to split statements up over multiple lines to allow `bash-annotations` interfaces to parse lines correctly. This applies to both @inject and @interface.
 
 ```bash
