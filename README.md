@@ -136,6 +136,7 @@ Injection location argument can be either: PRE, POST, or PREPOST
 
 The first time an injection annotation detects its target function being invoked, then the listener function (which performs the injection) is consumed, and the target function is re-declared with the newly injected code.
 
+Variables declared within an injection annotation may be accessed by an annotated function (by referencing their namespace, even if local scope). 
 
 ```bash
 @inject PRE
