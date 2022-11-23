@@ -33,9 +33,20 @@ trim() {
 }
 
 
-# Helper function to return an array of all currently declared annotation functions
+# Helper function to populate the passed array with all currently declared annotation functions
 # i.e. functions that are prepended by an @ symbol 
+#
+# Parameter 1: Array (nameref)
+#
+#
+# Example:
+# 
+# declare -a array
+#
+# return_declared_annotation_functions_array array
+#
+# echo "${array[*]}"
 return_declared_annotation_functions_array() {
     local -n functions_array="${1}"
-    read -a functions_array < <(declare -F | cut -d " " -f 3 | grep -oP "^@[a-zA-Z:./_-]+$" | tr '\n' ' ')
+    read -a functions_array < <(declare -F | cut -d " " -f 3 | grep -oP "^@[a-zA-Z:./_-]+$" | grep -v "@interface" | grep -v "@inject" | tr '\n' ' ')
 }

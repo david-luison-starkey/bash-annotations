@@ -1,4 +1,4 @@
-import reflection.bash
+import interfaces/reflection.bash
 import util/utility.bash
 
 

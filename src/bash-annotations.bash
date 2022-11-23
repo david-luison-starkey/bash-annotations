@@ -20,6 +20,7 @@ function import() {
         return 1
     }
 
+    # Source a script once and once only 
     for script in "${to_source[@]}"; do 
         if ! _is_imported "${script}" && \
         [[ -f "${BASH_ANNOTATIONS_PROJECT_BASE_DIRECTORY}${script}" ]]; then 
