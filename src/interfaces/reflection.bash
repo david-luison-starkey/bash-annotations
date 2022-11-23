@@ -128,7 +128,7 @@ get_annotated_function_body() {
 invoke_function_annotation_pre() {
     local target_function="${1}" 
     local target_function_length="${#target_function}"
-    local parse_command="$(grep -oP "^${target_function}(?!\(\)\s\{)(\s|$)" <<< "${BASH_COMMAND}")"
+    local parse_command="$(trim "$(grep -oP "^${target_function}(?!\(\)\s\{)(\s|$)" <<< "${BASH_COMMAND}")")"
 
     if [[ "${parse_command:0:${target_function_length}}" == "${target_function}" ]]; then
         return 0
@@ -142,7 +142,7 @@ invoke_function_annotation_post() {
     local target_function="${1}"
     local target_function_length="${#target_function}"
     local parse_history="$(builtin history 2 | head -1 | sed 's/^ *[0-9]* *//')"
-    local parse_function_invocation="$(grep "${target_function}" <<< "${parse_history}" | grep -oP "^${target_function}(?!\(\)\s\{)(\s|$)")"
+    local parse_function_invocation="$(trim "$(grep "${target_function}" <<< "${parse_history}" | grep -oP "^${target_function}(?!\(\)\s\{)(\s|$)")")"
 
     if [[ "${parse_history:0:${target_function_length}}" == "${parse_function_invocation}" ]]; then
         return 0
