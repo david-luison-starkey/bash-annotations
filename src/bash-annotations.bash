@@ -6,19 +6,20 @@ declare -gax BASH_ANNOTATIONS_FUNCTION_ARRAY
 declare -gx BASH_ANNOTATIONS_PROJECT_BASE_DIRECTORY="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)/"
 
 
-# Basic import function intended to be used internally by project
-function import() {
-    local to_source=("${@}")
+# Private function to check if item is in array. 
+# Avoids external dependency on util/utility.sh is_element_in_array()
+_is_imported() {
+    local import_requested="${1}"
+    for imported in "${BASH_ANNOTATIONS_IMPORT_ARRAY[@]}"; do
+        [[ "${import_requested}" == "${imported}" ]] && return 0
+    done
+    return 1
+}
 
-    # Internal function to check if item is in array. 
-    # Avoids external dependency on util/utility.sh is_element_in_array()
-    _is_imported() {
-        local import_requested="${1}"
-        for imported in "${BASH_ANNOTATIONS_IMPORT_ARRAY[@]}"; do
-            [[ "${import_requested}" == "${imported}" ]] && return 0
-        done
-        return 1
-    }
+
+# Basic import function intended to be used internally by project
+import() {
+    local to_source=("${@}")
 
     # Source a script once and once only 
     for script in "${to_source[@]}"; do 
@@ -31,6 +32,7 @@ function import() {
         fi
     done
 }
+
 
 # Loops through global array that stores functions created by annotations
 bash_annotations_trap_controller() {
