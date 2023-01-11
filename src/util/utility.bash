@@ -1,6 +1,6 @@
-
 is_element_in_array() {
-    local value="${1}"; shift;
+    local value="${1}"
+    shift
     local array=("${@}")
 
     for item in "${array[@]}"; do
@@ -9,7 +9,6 @@ is_element_in_array() {
 
     return 1
 }
-
 
 remove_element_from_array() {
     local remove="${1}"
@@ -32,15 +31,14 @@ trim() {
     echo "${var}"
 }
 
-
 # Helper function to populate the passed array with all currently declared annotation functions
-# i.e. functions that are prepended by an @ symbol 
+# i.e. functions that are prepended by an @ symbol
 #
 # Parameter 1: Array (nameref)
 #
 #
 # Example:
-# 
+#
 # declare -a array
 #
 # return_declared_annotation_functions_array array

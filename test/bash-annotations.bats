@@ -1,6 +1,5 @@
 #!/usr/bin/env bats
 
-
 setup() {
     load "test_helper"
     common_setup
@@ -8,7 +7,7 @@ setup() {
 }
 
 @test "bash_annotations_setup sets options and DEBUG trap" {
-    run bash_annotations_setup 
+    run bash_annotations_setup
     eval '[ -o history ]'
     assert_success
     eval '[ -o functrace ]'
