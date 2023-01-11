@@ -192,8 +192,8 @@ get_annotated_variable() {
             return 0
         elif [[ "${line}" =~ $declaration_initialisation_pattern ]] && [[ "${start}" == "true" ]]; then
             match="$(trim "${line}")"
-            match="${match##* }"
             match="${match%\=*}"
+            match="${match##* }"
             echo "${match}"
             return 0
         elif [[ "${line}" =~ $annotations_pattern ]] || [[ "${line}" =~ $comment_pattern ]] && [[ "${start}" == "true" ]]; then
