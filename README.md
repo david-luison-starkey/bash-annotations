@@ -321,6 +321,30 @@ First argument
 
 * @interface annotations persist for the duration of the script they are called in. This means that any checks made by these annotations (listening for their trigger conditions) are performed continuously, leading to extended script execution time. For this reason, it is recommended that @inject is favoured over @interface for function annotations (while @interface must be used for annotating variables).
 
+* @inject annotations that reference "$@" refer to all positional arguments passed to the annotation, not to the annotated function. To referenc all positional arguments passed to the annotated function, use \\\\\\\$@ instead (i.e. escaped three times).
+
+```bash
+@inject PRE
+access_annotated_function_args() {
+    echo "Annotation args: $@"
+    echo "Annotated func args: \\\$@"
+}
+
+@access_annotated_function_args "Example annotation"
+target() {
+    arg1="${1}"
+    arg2="${2}"
+    arg3="${3}"
+}
+
+target one two three
+```
+*Output*:
+```bash
+Annotation args: Example annotation
+Annotated func args: one two three
+```
+
 * Annotations execute in reverse order of appearance (meaning that for any given annotated target, the last annotation will execute first and the first annotation will execute last).
 
 * No logging or error messaging exist at present. Errors (such as an annotation failing to find a target type) will fail silently, however all functions in `bash-annotations` return either a 0 or 1 exit code based on success or failure.
