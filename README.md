@@ -321,7 +321,7 @@ First argument
 
 * @interface annotations persist for the duration of the script they are called in. This means that any checks made by these annotations (listening for their trigger conditions) are performed continuously, leading to extended script execution time. For this reason, it is recommended that @inject is favoured over @interface for function annotations (while @interface must be used for annotating variables).
 
-* @inject annotations that reference "$@" refer to all positional arguments passed to the annotation, not to the annotated function. To referenc all positional arguments passed to the annotated function, use \\\\\\\$@ instead (i.e. escaped three times).
+* @inject annotations that reference "$@" refer to all positional arguments passed to the annotation, not to the annotated function. To reference all positional arguments passed to the annotated function, use \\\\\\\$@ instead (i.e. escaped three times).
 
 ```bash
 @inject PRE
