@@ -207,6 +207,7 @@ Special variables are:
 |-----------|----------|-------|
 | @interface | annotated_function | Name of the annotated function | 
 | @interface | annotated_variable | Name of the annotated variable | 
+| @interface | annotated_variable_value | Value of the annotated variable | 
 | @inject | inject_annotated_function | Name of annotated function (to be injected) |
 
 Special variables are unique to each annotation (given a given annotations target).
@@ -281,7 +282,7 @@ The response from www.google.come was:
 
 * @inject annotations do not play nicely with @inferface annotations that target variables within either the annotation itself, or the function the @inject annotation targets. As such, using @inject annotations with @interface VARIABLE annotations should be avoided. @interface FUNCTION and @interface VARIABLE annotations do not interfere with each other however and can be used on/within the same function.
 
-* Special variables must not exist on the same line as any other variable or command substitution etc. (as conditional logic applies to escaping the '$' symbol, where special variables are escaped differently). Backslashes can be used to split statements up over multiple lines to allow `bash-annotations` interfaces to parse lines correctly. This applies to both @inject and @interface.
+* Special variables (excepting annotated_variable_value) must not exist on the same line as any other variable or command substitution etc. (as conditional logic applies to escaping the '$' symbol, where special variables are escaped differently). Backslashes can be used to split statements up over multiple lines to allow `bash-annotations` interfaces to parse lines correctly. This applies to both @inject and @interface. It is recommended to assign special variables to another variable, then reference that variable henceforth to avoid breaking code up over multiple lines.
 
 ```bash
 @interface FUNCTION POST
@@ -296,7 +297,7 @@ function_annotation() {
 }
 ```
 
-* Similarly, positional parameter variables must not exist on the same line as any other variable or command substition. Special variables and positional parameter variables can exist on the same line as each other however. This applies to both @inject and @interface.
+* Similarly, positional parameter variables must not exist on the same line as any other variable or command substition. Special variables and positional parameter variables can exist on the same line as each other however. This applies to both @inject and @interface (excepting annotated_variable_value).
 
 ```bash
 @inject PRE
