@@ -226,6 +226,9 @@ _build_variable_annotation_pre() {
 
             { builtin source /dev/fd/999 ; } 999<<-DECLARE_VARIABLE_NAMESPACE_ANNOTATION_PRE
             \${function_namespace}() {
+
+                local annotated_variable_value=\\\$(get_annotated_variable_value \$annotated_variable)
+
                 if invoke_variable_annotation_pre \$annotated_variable; then
                     ${function_body}
                 fi
@@ -256,6 +259,7 @@ _build_variable_annotation_post() {
             { builtin source /dev/fd/999 ; } 999<<-DECLARE_VARIABLE_NAMESPACE_ANNOTATION_POST
             \${function_namespace}() {
 
+                local annotated_variable_value=\\\$(get_annotated_variable_value \$annotated_variable)
                 local annotated_variable_post_delayed_trigger=\${function_namespace#@*}_post
 
                 if invoke_variable_annotation_pre \$annotated_variable && \
@@ -293,6 +297,7 @@ _build_variable_annotation_prepost() {
             { builtin source /dev/fd/999 ; } 999<<-DECLARE_VARIABLE_NAMESPACE_ANNOTATION_PREPOST
             \${function_namespace}() {
 
+                local annotated_variable_value=\\\$(get_annotated_variable_value \$annotated_variable)
                 local annotated_variable_post_delayed_trigger=\${function_namespace#@*}_post
 
                 if invoke_variable_annotation_pre \$annotated_variable && \

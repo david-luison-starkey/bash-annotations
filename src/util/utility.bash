@@ -31,6 +31,22 @@ trim() {
     echo "${var}"
 }
 
+# Function serves as a more reliable way of retrieving the value of "${annotated_variable}" 
+# as indirection (i.e. "${!annotated_variable}") has proven to be unreliable in some instances.
+get_annotated_variable_value() {
+    local variable="${1}"
+    local variable_value="$(declare -p "${variable}" 2> /dev/null)"
+    variable_value="${variable_value##*\=}"
+    remove_double_quotes "${variable_value}"
+}
+
+# Remove leading and trailing double quotation marks from text
+remove_double_quotes() {
+    string="${1}"
+    string="${string#*\"}"
+    echo "${string%\"*}"
+}
+
 # Helper function to populate the passed array with all currently declared annotation functions
 # i.e. functions that are prepended by an @ symbol
 #
