@@ -3,7 +3,7 @@ import util/utility.bash
 # Functions in reflection.bash are intended to be called only by interface functions.
 
 get_annotated_function() {
-	local source_file="${1:-${0}}"
+	local invoking_annotations_source_file="${1:-${0}}"
 	local annotation="${FUNCNAME[1]}"
 	local annotation_length="${#annotation}"
 	local line_start="${BASH_LINENO[1]}"
@@ -31,14 +31,14 @@ get_annotated_function() {
 		else
 			continue
 		fi
-	done <"${source_file}"
+	done <"${invoking_annotations_source_file}"
 }
 
 get_annotated_function_body() {
 	local -n function_body_string="${1}"
 	local -a function_body_array
 
-	local source_file="${2:-${0}}"
+	local invoking_annotations_source_file="${2:-${0}}"
 	local annotation="${FUNCNAME[1]}"
 	local annotation_length="${#annotation}"
 	local line_start="${BASH_LINENO[1]}"
@@ -69,7 +69,7 @@ get_annotated_function_body() {
 		else
 			continue
 		fi
-	done <"${source_file}"
+	done <"${invoking_annotations_source_file}"
 
 	build_annotated_function_body_string function_body_string "${function_body_array[@]}"
 }
@@ -90,6 +90,11 @@ build_annotated_function_body_string() {
 	# @inject special variables
 	local reserved_namespace_inject_annotated_function="\$inject_annotated_function"
 	local reserved_namespace_inject_annotated_function_braces="\${inject_annotated_function}"
+	# Common special variables
+	local reserved_namespace_annotation_function_namespace="\$annotation_function_namespace"
+	local reserved_namespace_annotation_function_namespace_braces="\${annotation_function_namespace}"
+	local reserved_namespace_annotation_source_file="\$annotation_source_file"
+	local reserved_namespace_annotation_source_file_braces="\${annotation_source_file}"
 
 	# Argument variables are not escaped to allow new annotations to be declared with parameters
 	# Pattern matching variables must be unquoted to function correctly
@@ -132,6 +137,14 @@ build_annotated_function_body_string() {
 
 		fi
 
+		# Common special variable parsing
+		if [[ "${line}" == *"${reserved_namespace_annotation_function_namespace}"* ]] ||
+			[[ "${line}" == *"${reserved_namespace_annotation_function_namespace_braces}"* ]] ||
+			[[ "${line}" == *"${reserved_namespace_annotation_source_file}"* ]] ||
+			[[ "${line}" == *"${reserved_namespace_annotation_source_file_braces}"* ]]; then
+			nameref_function_body_string+="$(trim "${line}")"
+		fi
+
 		nameref_function_body_string+=$'\n'
 	done
 }
@@ -162,7 +175,7 @@ invoke_function_annotation_post() {
 }
 
 get_annotated_variable() {
-	local source_file="${1:-${0}}"
+	local invoking_annotations_source_file="${1:-${0}}"
 	local annotation="${FUNCNAME[1]}"
 	local annotation_length="${#annotation}"
 	local line_start="${BASH_LINENO[1]}"
@@ -203,7 +216,7 @@ get_annotated_variable() {
 		elif ((counter >= (line_start + 1))) && [[ "${start}" == "true" ]]; then
 			return 1
 		fi
-	done <"${source_file}"
+	done <"${invoking_annotations_source_file}"
 }
 
 invoke_variable_annotation_pre() {

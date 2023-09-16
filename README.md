@@ -214,8 +214,8 @@ Common special variables (for both @interface and @inject) are:
 
 | Variable | Value |
 |----------|-------|
-| function_namespace | Unique namespace of custom annotation |
-| source_file | File annotation is invoked in |
+| annotation_function_namespace | Unique namespace of custom annotation |
+| annotation_source_file | File annotation is invoked in |
 
 Special variables are unique to each annotation (given a given annotations target).
 

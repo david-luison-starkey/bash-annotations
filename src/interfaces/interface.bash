@@ -97,30 +97,30 @@ _build_function_annotation_pre() {
 
 	{ builtin source /dev/fd/999; } 999<<DECLARE_FUNCTION_ANNOTATION_PRE
     @${annotation_target}() {
-        local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
-        local source_file="$(realpath "\${BASH_SOURCE[1]}")"
-        local annotated_function="\$(get_annotated_function "\${source_file}")"
+        local annotation_function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
+        local annotation_source_file="$(realpath "\${BASH_SOURCE[1]}")"
+        local annotated_function="\$(get_annotated_function "\${annotation_source_file}")"
 
-        eval "declare -gx \${function_namespace#@*}_pre=false"
+        eval "declare -gx \${annotation_function_namespace#@*}_pre=false"
 
         if [[ -n "\${annotated_function}" ]]; then
 
             { builtin source /dev/fd/999 ; } 999<<DECLARE_FUNCTION_ANNOTATION_NAMESPACE_PRE
-            \${function_namespace}() {
-                local inside_annotated_function_pre=\${function_namespace#@*}_pre
+            \${annotation_function_namespace}() {
+                local inside_annotated_function_pre=\${annotation_function_namespace#@*}_pre
 
                 if invoke_function_annotation_pre \$annotated_function && \
                 [[ \\\${!inside_annotated_function_pre} == "false" ]]; then
-                    eval "\${function_namespace#@*}_pre=true"
+                    eval "\${annotation_function_namespace#@*}_pre=true"
                     ${function_body}
                 elif ! invoke_function_annotation_pre \$annotated_function && \
                 [[ \\\${!inside_annotated_function_pre} == "true" ]] && \
                 ! is_element_in_array \$annotated_function \\\${FUNCNAME[@]}; then
-                    eval "\${function_namespace#@*}_pre=false"
+                    eval "\${annotation_function_namespace#@*}_pre=false"
                 fi
             }
 DECLARE_FUNCTION_ANNOTATION_NAMESPACE_PRE
-            BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${function_namespace}")
+            BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${annotation_function_namespace}")
         else
             return 1
         fi
@@ -134,29 +134,29 @@ _build_function_annotation_post() {
 
 	{ builtin source /dev/fd/999; } 999<<DECLARE_FUNCTION_ANNOTATION_POST
     @${annotation_target}() {
-        local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
-        local source_file="$(realpath "\${BASH_SOURCE[1]}")"
-        local annotated_function="\$(get_annotated_function "\${source_file}")"
+        local annotation_function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
+        local annotation_source_file="$(realpath "\${BASH_SOURCE[1]}")"
+        local annotated_function="\$(get_annotated_function "\${annotation_source_file}")"
 
-        eval "declare -gx \${function_namespace#@*}_post=false"
+        eval "declare -gx \${annotation_function_namespace#@*}_post=false"
 
         if [[ -n "\${annotated_function}" ]]; then
 
             { builtin source /dev/fd/999 ; } 999<<DECLARE_FUNCTION_NAMESPACE_ANNOTATION_POST
-            \${function_namespace}() {
-                local inside_annotated_function_post=\${function_namespace#@*}_post
+            \${annotation_function_namespace}() {
+                local inside_annotated_function_post=\${annotation_function_namespace#@*}_post
 
                 if invoke_function_annotation_post \$annotated_function && \
                 [[ \\\${!inside_annotated_function_post} == "false" ]]; then
-                    eval "\${function_namespace#@*}_post=true"
+                    eval "\${annotation_function_namespace#@*}_post=true"
                     ${function_body}
                 elif ! invoke_function_annotation_post \$annotated_function && \
                 [[ \\\${!inside_annotated_function_post} == "true" ]]; then
-                    eval "\${function_namespace#@*}_post=false"
+                    eval "\${annotation_function_namespace#@*}_post=false"
                 fi
             }
 DECLARE_FUNCTION_NAMESPACE_ANNOTATION_POST
-            BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${function_namespace}")
+            BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${annotation_function_namespace}")
         else
             return 1
         fi
@@ -170,41 +170,41 @@ _build_function_annotation_prepost() {
 
 	{ builtin source /dev/fd/999; } 999<<DECLARE_FUNCTION_ANNOTATION_PREPOST
     @${annotation_target}() {
-        local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
-        local source_file="$(realpath "\${BASH_SOURCE[1]}")"
-        local annotated_function="\$(get_annotated_function "\${source_file}")"
+        local annotation_function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
+        local annotation_source_file="$(realpath "\${BASH_SOURCE[1]}")"
+        local annotated_function="\$(get_annotated_function "\${annotation_source_file}")"
 
-        eval "declare -gx \${function_namespace#@*}_pre=false"
-        eval "declare -gx \${function_namespace#@*}_post=false"
+        eval "declare -gx \${annotation_function_namespace#@*}_pre=false"
+        eval "declare -gx \${annotation_function_namespace#@*}_post=false"
 
         if [[ -n "\${annotated_function}" ]]; then
 
             { builtin source /dev/fd/999 ; } 999<<DECLARE_FUNCTION_ANNOTATION_NAMESPACE_PREPOST
-            \${function_namespace}() {
-                local inside_annotated_function_pre=\${function_namespace#@*}_pre
-                local inside_annotated_function_post=\${function_namespace#@*}_post
+            \${annotation_function_namespace}() {
+                local inside_annotated_function_pre=\${annotation_function_namespace#@*}_pre
+                local inside_annotated_function_post=\${annotation_function_namespace#@*}_post
 
                 if invoke_function_annotation_post \$annotated_function && \
                 [[ \\\${!inside_annotated_function_post} == "false" ]]; then
-                    eval "\${function_namespace#@*}_post=true"
+                    eval "\${annotation_function_namespace#@*}_post=true"
                     ${function_body}
                 elif ! invoke_function_annotation_post \$annotated_function && \
                 [[ \\\${!inside_annotated_function_post} == "true" ]]; then
-                    eval "\${function_namespace#@*}_post=false"
+                    eval "\${annotation_function_namespace#@*}_post=false"
                 fi
 
                 if invoke_function_annotation_pre \$annotated_function && \
                 [[ \\\${!inside_annotated_function_pre} == "false" ]]; then
-                    eval "\${function_namespace#@*}_pre=true"
+                    eval "\${annotation_function_namespace#@*}_pre=true"
                     ${function_body}
                 elif ! invoke_function_annotation_pre \$annotated_function && \
                 [[ \\\${!inside_annotated_function_pre} == "true" ]] && \
                 ! is_element_in_array \$annotated_function \\\${FUNCNAME[@]}; then
-                    eval "\${function_namespace#@*}_pre=false"
+                    eval "\${annotation_function_namespace#@*}_pre=false"
                 fi
             }
 DECLARE_FUNCTION_ANNOTATION_NAMESPACE_PREPOST
-            BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${function_namespace}")
+            BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${annotation_function_namespace}")
         else
             return 1
         fi
@@ -218,14 +218,14 @@ _build_variable_annotation_pre() {
 
 	{ builtin source /dev/fd/999; } 999<<DECLARE_VARIABLE_ANNOTATION_PRE
     @${annotation_target}() {
-        local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
-        local source_file="$(realpath "\${BASH_SOURCE[1]}")"
-        local annotated_variable="\$(get_annotated_variable "\${source_file}")"
+        local annotation_function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
+        local annotation_source_file="$(realpath "\${BASH_SOURCE[1]}")"
+        local annotated_variable="\$(get_annotated_variable "\${annotation_source_file}")"
 
         if [[ -n "\${annotated_variable}" ]]; then
 
             { builtin source /dev/fd/999 ; } 999<<DECLARE_VARIABLE_NAMESPACE_ANNOTATION_PRE
-            \${function_namespace}() {
+            \${annotation_function_namespace}() {
 
                 local annotated_variable_value=\\\$(get_annotated_variable_value \$annotated_variable)
 
@@ -234,7 +234,7 @@ _build_variable_annotation_pre() {
                 fi
             }
 DECLARE_VARIABLE_NAMESPACE_ANNOTATION_PRE
-            BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${function_namespace}")
+            BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${annotation_function_namespace}")
         else
             return 1
         fi
@@ -248,31 +248,31 @@ _build_variable_annotation_post() {
 
 	{ builtin source /dev/fd/999; } 999<<DECLARE_VARIABLE_ANNOTATION_POST
     @${annotation_target}() {
-        local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
-        local source_file="$(realpath "\${BASH_SOURCE[1]}")"
-        local annotated_variable="\$(get_annotated_variable "\${source_file}")"
+        local annotation_function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
+        local annotation_source_file="$(realpath "\${BASH_SOURCE[1]}")"
+        local annotated_variable="\$(get_annotated_variable "\${annotation_source_file}")"
 
-        eval "declare -gx \${function_namespace#@*}_post=false"
+        eval "declare -gx \${annotation_function_namespace#@*}_post=false"
 
         if [[ -n "\${annotated_variable}" ]]; then
 
             { builtin source /dev/fd/999 ; } 999<<DECLARE_VARIABLE_NAMESPACE_ANNOTATION_POST
-            \${function_namespace}() {
+            \${annotation_function_namespace}() {
 
                 local annotated_variable_value=\\\$(get_annotated_variable_value \$annotated_variable)
-                local annotated_variable_post_delayed_trigger=\${function_namespace#@*}_post
+                local annotated_variable_post_delayed_trigger=\${annotation_function_namespace#@*}_post
 
                 if invoke_variable_annotation_pre \$annotated_variable && \
                 [[ \\\${!annotated_variable_post_delayed_trigger} == "false" ]]; then
-                    eval "\${function_namespace#@*}_post=true"
+                    eval "\${annotation_function_namespace#@*}_post=true"
                 elif ! invoke_variable_annotation_pre \$annotated_variable && \
                 [[ \\\${!annotated_variable_post_delayed_trigger} == "true" ]]; then
-                    eval "\${function_namespace#@*}_post=false"
+                    eval "\${annotation_function_namespace#@*}_post=false"
                     ${function_body}
                 fi
             }
 DECLARE_VARIABLE_NAMESPACE_ANNOTATION_POST
-            BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${function_namespace}")
+            BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${annotation_function_namespace}")
         else
             return 1
         fi
@@ -286,35 +286,35 @@ _build_variable_annotation_prepost() {
 
 	{ builtin source /dev/fd/999; } 999<<DECLARE_VARIABLE_ANNOTATION_PREPOST
     @${annotation_target}() {
-        local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
-        local source_file="$(realpath "\${BASH_SOURCE[1]}")"
-        local annotated_variable="\$(get_annotated_variable "\${source_file}")"
+        local annotation_function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
+        local annotation_source_file="$(realpath "\${BASH_SOURCE[1]}")"
+        local annotated_variable="\$(get_annotated_variable "\${annotation_source_file}")"
 
-        eval "declare -gx \${function_namespace#@*}_post=false"
+        eval "declare -gx \${annotation_function_namespace#@*}_post=false"
 
         if [[ -n "\${annotated_variable}" ]]; then
 
             { builtin source /dev/fd/999 ; } 999<<DECLARE_VARIABLE_NAMESPACE_ANNOTATION_PREPOST
-            \${function_namespace}() {
+            \${annotation_function_namespace}() {
 
                 local annotated_variable_value=\\\$(get_annotated_variable_value \$annotated_variable)
-                local annotated_variable_post_delayed_trigger=\${function_namespace#@*}_post
+                local annotated_variable_post_delayed_trigger=\${annotation_function_namespace#@*}_post
 
                 if invoke_variable_annotation_pre \$annotated_variable && \
                 [[ \\\${!annotated_variable_post_delayed_trigger} == "false" ]]; then
-                    eval "\${function_namespace#@*}_post=true"
+                    eval "\${annotation_function_namespace#@*}_post=true"
                     ${function_body}
                 elif invoke_variable_annotation_pre \$annotated_variable && \
                 [[ \\\${!annotated_variable_post_delayed_trigger} == "true" ]]; then
                     ${function_body}
                 elif ! invoke_variable_annotation_pre \$annotated_variable && \
                 [[ \\\${!annotated_variable_post_delayed_trigger} == "true" ]]; then
-                    eval "\${function_namespace#@*}_post=false"
+                    eval "\${annotation_function_namespace#@*}_post=false"
                     ${function_body}
                 fi
             }
 DECLARE_VARIABLE_NAMESPACE_ANNOTATION_PREPOST
-            BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${function_namespace}")
+            BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${annotation_function_namespace}")
         else
             return 1
         fi

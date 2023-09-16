@@ -29,8 +29,8 @@ import util/utility.bash
 	local pre
 	local post
 
-	# Consume function_namespace() listener function once injection is complete
-	local remove="remove_element_from_array \${function_namespace} BASH_ANNOTATIONS_FUNCTION_ARRAY"
+	# Consume annotation_function_namespace() listener function once injection is complete
+	local remove="remove_element_from_array \${annotation_function_namespace} BASH_ANNOTATIONS_FUNCTION_ARRAY"
 	# Pre-invocation injection condition
 	local listener="invoke_function_annotation_pre \$inject_annotated_function"
 	# File @inject interface was invoked to allow for "introspecting" the correct script
@@ -55,14 +55,14 @@ import util/utility.bash
 
 			{ source /dev/fd/999; } 999<<DECLARE_INJECT_ANNOTATION_FUNCTION
             @${annotated_function}() {
-                local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
-                local source_file="\$(realpath "\${BASH_SOURCE[1]}")"
-                local inject_annotated_function="\$(get_annotated_function "\${source_file}")"
+                local annotation_function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
+                local annotation_source_file="\$(realpath "\${BASH_SOURCE[1]}")"
+                local inject_annotated_function="\$(get_annotated_function "\${annotation_source_file}")"
 
                 if [[ -n "\${inject_annotated_function}" ]]; then
 
                     { builtin source /dev/fd/999 ; } 999<<DECLARE_INJECT_ANNOTATION_FUNCTION_NAMESPACE
-                        \${function_namespace}() {
+                        \${annotation_function_namespace}() {
                             if ${listener}; then
                                 inject_annotated_function_body="\\\$(declare -f \$inject_annotated_function)"
                                 inject_annotated_function_body="\\\${inject_annotated_function_body#*{}"
@@ -79,7 +79,7 @@ DECLARE_INJECTED_FUNCTION
                             fi
                         }
 DECLARE_INJECT_ANNOTATION_FUNCTION_NAMESPACE
-                        BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${function_namespace}")
+                        BASH_ANNOTATIONS_FUNCTION_ARRAY+=("\${annotation_function_namespace}")
                 else
                     return 1
                 fi
