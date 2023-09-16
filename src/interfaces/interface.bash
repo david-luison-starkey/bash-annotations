@@ -31,71 +31,71 @@ import util/utility.bash
 #
 # Valid values: PRE, POST, PREPOST (case-sensitive)
 @interface() {
-    annotated_type "${1:-}" && local type="${1}" || return 1
-    trigger "${2:-}" && local trigger="${2}" || return 1
+	annotated_type "${1:-}" && local type="${1}" || return 1
+	trigger "${2:-}" && local trigger="${2}" || return 1
 
-    local annotation_target
-    # File @interface interface was invoked to allow for "introspecting" the correct script
-    local source_file="$(realpath "${BASH_SOURCE[1]}")"
+	local annotation_target
+	# File @interface interface was invoked to allow for "introspecting" the correct script
+	local source_file="$(realpath "${BASH_SOURCE[1]}")"
 
-    # Function @interface has annotated
-    annotation_target="$(get_annotated_function "${source_file}")"
-    if [[ -n "${annotation_target}" ]]; then
+	# Function @interface has annotated
+	annotation_target="$(get_annotated_function "${source_file}")"
+	if [[ -n "${annotation_target}" ]]; then
 
-        local function_body
-        # Retrieve body of function @interface has annotated
-        get_annotated_function_body "function_body" "${source_file}"
+		local function_body
+		# Retrieve body of function @interface has annotated
+		get_annotated_function_body "function_body" "${source_file}"
 
-        if [[ -n "${function_body}" ]]; then
+		if [[ -n "${function_body}" ]]; then
 
-            if [[ "${type}" == "FUNCTION" ]]; then
+			if [[ "${type}" == "FUNCTION" ]]; then
 
-                if [[ "${trigger}" == "PRE" ]]; then
+				if [[ "${trigger}" == "PRE" ]]; then
 
-                    _build_function_annotation_pre "${annotation_target}" "${function_body}"
+					_build_function_annotation_pre "${annotation_target}" "${function_body}"
 
-                elif [[ "${trigger}" == "POST" ]]; then
+				elif [[ "${trigger}" == "POST" ]]; then
 
-                    _build_function_annotation_post "${annotation_target}" "${function_body}"
+					_build_function_annotation_post "${annotation_target}" "${function_body}"
 
-                elif [[ "${trigger}" == "PREPOST" ]]; then
+				elif [[ "${trigger}" == "PREPOST" ]]; then
 
-                    _build_function_annotation_prepost "${annotation_target}" "${function_body}"
+					_build_function_annotation_prepost "${annotation_target}" "${function_body}"
 
-                fi
+				fi
 
-            elif [[ "${type}" == "VARIABLE" ]]; then
+			elif [[ "${type}" == "VARIABLE" ]]; then
 
-                if [[ "${trigger}" == "PRE" ]]; then
+				if [[ "${trigger}" == "PRE" ]]; then
 
-                    _build_variable_annotation_pre "${annotation_target}" "${function_body}"
+					_build_variable_annotation_pre "${annotation_target}" "${function_body}"
 
-                elif [[ "${trigger}" == "POST" ]]; then
+				elif [[ "${trigger}" == "POST" ]]; then
 
-                    _build_variable_annotation_post "${annotation_target}" "${function_body}"
+					_build_variable_annotation_post "${annotation_target}" "${function_body}"
 
-                elif [[ "${trigger}" == "PREPOST" ]]; then
+				elif [[ "${trigger}" == "PREPOST" ]]; then
 
-                    _build_variable_annotation_prepost "${annotation_target}" "${function_body}"
+					_build_variable_annotation_prepost "${annotation_target}" "${function_body}"
 
-                fi
+				fi
 
-            else
-                return 1
-            fi
-        else
-            return 1
-        fi
-    else
-        return 1
-    fi
+			else
+				return 1
+			fi
+		else
+			return 1
+		fi
+	else
+		return 1
+	fi
 }
 
 _build_function_annotation_pre() {
-    local annotation_target="${1}"
-    local function_body="${2}"
+	local annotation_target="${1}"
+	local function_body="${2}"
 
-    { builtin source /dev/fd/999; } 999<<-DECLARE_FUNCTION_ANNOTATION_PRE
+	{ builtin source /dev/fd/999; } 999<<DECLARE_FUNCTION_ANNOTATION_PRE
     @${annotation_target}() {
         local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
         local source_file="$(realpath "\${BASH_SOURCE[1]}")"
@@ -105,7 +105,7 @@ _build_function_annotation_pre() {
 
         if [[ -n "\${annotated_function}" ]]; then
 
-            { builtin source /dev/fd/999 ; } 999<<-DECLARE_FUNCTION_ANNOTATION_NAMESPACE_PRE
+            { builtin source /dev/fd/999 ; } 999<<DECLARE_FUNCTION_ANNOTATION_NAMESPACE_PRE
             \${function_namespace}() {
                 local inside_annotated_function_pre=\${function_namespace#@*}_pre
 
@@ -129,10 +129,10 @@ DECLARE_FUNCTION_ANNOTATION_PRE
 }
 
 _build_function_annotation_post() {
-    local annotation_target="${1}"
-    local function_body="${2}"
+	local annotation_target="${1}"
+	local function_body="${2}"
 
-    { builtin source /dev/fd/999; } 999<<-DECLARE_FUNCTION_ANNOTATION_POST
+	{ builtin source /dev/fd/999; } 999<<DECLARE_FUNCTION_ANNOTATION_POST
     @${annotation_target}() {
         local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
         local source_file="$(realpath "\${BASH_SOURCE[1]}")"
@@ -142,7 +142,7 @@ _build_function_annotation_post() {
 
         if [[ -n "\${annotated_function}" ]]; then
 
-            { builtin source /dev/fd/999 ; } 999<<-DECLARE_FUNCTION_NAMESPACE_ANNOTATION_POST
+            { builtin source /dev/fd/999 ; } 999<<DECLARE_FUNCTION_NAMESPACE_ANNOTATION_POST
             \${function_namespace}() {
                 local inside_annotated_function_post=\${function_namespace#@*}_post
 
@@ -165,10 +165,10 @@ DECLARE_FUNCTION_ANNOTATION_POST
 }
 
 _build_function_annotation_prepost() {
-    local annotation_target="${1}"
-    local function_body="${2}"
+	local annotation_target="${1}"
+	local function_body="${2}"
 
-    { builtin source /dev/fd/999; } 999<<-DECLARE_FUNCTION_ANNOTATION_PREPOST
+	{ builtin source /dev/fd/999; } 999<<DECLARE_FUNCTION_ANNOTATION_PREPOST
     @${annotation_target}() {
         local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
         local source_file="$(realpath "\${BASH_SOURCE[1]}")"
@@ -179,7 +179,7 @@ _build_function_annotation_prepost() {
 
         if [[ -n "\${annotated_function}" ]]; then
 
-            { builtin source /dev/fd/999 ; } 999<<-DECLARE_FUNCTION_ANNOTATION_NAMESPACE_PREPOST
+            { builtin source /dev/fd/999 ; } 999<<DECLARE_FUNCTION_ANNOTATION_NAMESPACE_PREPOST
             \${function_namespace}() {
                 local inside_annotated_function_pre=\${function_namespace#@*}_pre
                 local inside_annotated_function_post=\${function_namespace#@*}_post
@@ -213,10 +213,10 @@ DECLARE_FUNCTION_ANNOTATION_PREPOST
 }
 
 _build_variable_annotation_pre() {
-    local annotation_target="${1}"
-    local function_body="${2}"
+	local annotation_target="${1}"
+	local function_body="${2}"
 
-    { builtin source /dev/fd/999; } 999<<-DECLARE_VARIABLE_ANNOTATION_PRE
+	{ builtin source /dev/fd/999; } 999<<DECLARE_VARIABLE_ANNOTATION_PRE
     @${annotation_target}() {
         local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
         local source_file="$(realpath "\${BASH_SOURCE[1]}")"
@@ -224,7 +224,7 @@ _build_variable_annotation_pre() {
 
         if [[ -n "\${annotated_variable}" ]]; then
 
-            { builtin source /dev/fd/999 ; } 999<<-DECLARE_VARIABLE_NAMESPACE_ANNOTATION_PRE
+            { builtin source /dev/fd/999 ; } 999<<DECLARE_VARIABLE_NAMESPACE_ANNOTATION_PRE
             \${function_namespace}() {
 
                 local annotated_variable_value=\\\$(get_annotated_variable_value \$annotated_variable)
@@ -243,10 +243,10 @@ DECLARE_VARIABLE_ANNOTATION_PRE
 }
 
 _build_variable_annotation_post() {
-    local annotation_target="${1}"
-    local function_body="${2}"
+	local annotation_target="${1}"
+	local function_body="${2}"
 
-    { builtin source /dev/fd/999; } 999<<-DECLARE_VARIABLE_ANNOTATION_POST
+	{ builtin source /dev/fd/999; } 999<<DECLARE_VARIABLE_ANNOTATION_POST
     @${annotation_target}() {
         local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
         local source_file="$(realpath "\${BASH_SOURCE[1]}")"
@@ -256,7 +256,7 @@ _build_variable_annotation_post() {
 
         if [[ -n "\${annotated_variable}" ]]; then
 
-            { builtin source /dev/fd/999 ; } 999<<-DECLARE_VARIABLE_NAMESPACE_ANNOTATION_POST
+            { builtin source /dev/fd/999 ; } 999<<DECLARE_VARIABLE_NAMESPACE_ANNOTATION_POST
             \${function_namespace}() {
 
                 local annotated_variable_value=\\\$(get_annotated_variable_value \$annotated_variable)
@@ -281,10 +281,10 @@ DECLARE_VARIABLE_ANNOTATION_POST
 }
 
 _build_variable_annotation_prepost() {
-    local annotation_target="${1}"
-    local function_body="${2}"
+	local annotation_target="${1}"
+	local function_body="${2}"
 
-    { builtin source /dev/fd/999; } 999<<-DECLARE_VARIABLE_ANNOTATION_PREPOST
+	{ builtin source /dev/fd/999; } 999<<DECLARE_VARIABLE_ANNOTATION_PREPOST
     @${annotation_target}() {
         local function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
         local source_file="$(realpath "\${BASH_SOURCE[1]}")"
@@ -294,7 +294,7 @@ _build_variable_annotation_prepost() {
 
         if [[ -n "\${annotated_variable}" ]]; then
 
-            { builtin source /dev/fd/999 ; } 999<<-DECLARE_VARIABLE_NAMESPACE_ANNOTATION_PREPOST
+            { builtin source /dev/fd/999 ; } 999<<DECLARE_VARIABLE_NAMESPACE_ANNOTATION_PREPOST
             \${function_namespace}() {
 
                 local annotated_variable_value=\\\$(get_annotated_variable_value \$annotated_variable)
@@ -324,37 +324,37 @@ DECLARE_VARIABLE_ANNOTATION_PREPOST
 
 # Defines valid annotation target type arguments for @interface
 annotated_type() {
-    local type="${1}"
+	local type="${1}"
 
-    case "${type}" in
-    "FUNCTION")
-        return 0
-        ;;
-    "VARIABLE")
-        return 0
-        ;;
-    *)
-        return 1
-        ;;
-    esac
+	case "${type}" in
+	"FUNCTION")
+		return 0
+		;;
+	"VARIABLE")
+		return 0
+		;;
+	*)
+		return 1
+		;;
+	esac
 }
 
 # Defines valid annotation trigger condition arguments for @interface
 trigger() {
-    local trigger="${1}"
+	local trigger="${1}"
 
-    case "${trigger}" in
-    "PRE")
-        return 0
-        ;;
-    "POST")
-        return 0
-        ;;
-    "PREPOST")
-        return 0
-        ;;
-    *)
-        return 1
-        ;;
-    esac
+	case "${trigger}" in
+	"PRE")
+		return 0
+		;;
+	"POST")
+		return 0
+		;;
+	"PREPOST")
+		return 0
+		;;
+	*)
+		return 1
+		;;
+	esac
 }
