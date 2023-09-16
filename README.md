@@ -210,6 +210,13 @@ Special variables are:
 | @interface | annotated_variable_value | Value of the annotated variable | 
 | @inject | inject_annotated_function | Name of annotated function (to be injected) |
 
+Common special variables (for both @interface and @inject) are:
+
+| Variable | Value |
+|----------|-------|
+| function_namespace | Unique namespace of custom annotation |
+| source_file | File annotation is invoked in |
+
 Special variables are unique to each annotation (given a given annotations target).
 
 ```bash
