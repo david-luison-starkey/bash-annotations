@@ -55,8 +55,8 @@ import util/utility.bash
 
 			{ source /dev/fd/999; } 999<<DECLARE_INJECT_ANNOTATION_FUNCTION
             @${annotated_function}() {
-                local annotation_function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
                 local annotation_source_file="\$(realpath "\${BASH_SOURCE[1]}")"
+                local annotation_function_namespace="\${FUNCNAME[0]}_\${annotation_source_file}_\${BASH_LINENO[0]}"
                 local inject_annotated_function="\$(get_annotated_function "\${annotation_source_file}")"
 
                 if [[ -n "\${inject_annotated_function}" ]]; then

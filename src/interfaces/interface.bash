@@ -97,8 +97,8 @@ _build_function_annotation_pre() {
 
 	{ builtin source /dev/fd/999; } 999<<DECLARE_FUNCTION_ANNOTATION_PRE
     @${annotation_target}() {
-        local annotation_function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
-        local annotation_source_file="$(realpath "\${BASH_SOURCE[1]}")"
+        local annotation_source_file="\$(realpath "\${BASH_SOURCE[1]}")"
+        local annotation_function_namespace="\${FUNCNAME[0]}_\${annotation_source_file}_\${BASH_LINENO[0]}"
         local annotated_function="\$(get_annotated_function "\${annotation_source_file}")"
 
         eval "declare -gx \${annotation_function_namespace#@*}_pre=false"
@@ -134,8 +134,8 @@ _build_function_annotation_post() {
 
 	{ builtin source /dev/fd/999; } 999<<DECLARE_FUNCTION_ANNOTATION_POST
     @${annotation_target}() {
-        local annotation_function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
-        local annotation_source_file="$(realpath "\${BASH_SOURCE[1]}")"
+        local annotation_source_file="\$(realpath "\${BASH_SOURCE[1]}")"
+        local annotation_function_namespace="\${FUNCNAME[0]}_\${annotation_source_file}_\${BASH_LINENO[0]}"
         local annotated_function="\$(get_annotated_function "\${annotation_source_file}")"
 
         eval "declare -gx \${annotation_function_namespace#@*}_post=false"
@@ -170,8 +170,8 @@ _build_function_annotation_prepost() {
 
 	{ builtin source /dev/fd/999; } 999<<DECLARE_FUNCTION_ANNOTATION_PREPOST
     @${annotation_target}() {
-        local annotation_function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
-        local annotation_source_file="$(realpath "\${BASH_SOURCE[1]}")"
+        local annotation_source_file="\$(realpath "\${BASH_SOURCE[1]}")"
+        local annotation_function_namespace="\${FUNCNAME[0]}_\${annotation_source_file}_\${BASH_LINENO[0]}"
         local annotated_function="\$(get_annotated_function "\${annotation_source_file}")"
 
         eval "declare -gx \${annotation_function_namespace#@*}_pre=false"
@@ -218,8 +218,8 @@ _build_variable_annotation_pre() {
 
 	{ builtin source /dev/fd/999; } 999<<DECLARE_VARIABLE_ANNOTATION_PRE
     @${annotation_target}() {
-        local annotation_function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
-        local annotation_source_file="$(realpath "\${BASH_SOURCE[1]}")"
+        local annotation_source_file="\$(realpath "\${BASH_SOURCE[1]}")"
+        local annotation_function_namespace="\${FUNCNAME[0]}_\${annotation_source_file}_\${BASH_LINENO[0]}"
         local annotated_variable="\$(get_annotated_variable "\${annotation_source_file}")"
 
         if [[ -n "\${annotated_variable}" ]]; then
@@ -248,8 +248,8 @@ _build_variable_annotation_post() {
 
 	{ builtin source /dev/fd/999; } 999<<DECLARE_VARIABLE_ANNOTATION_POST
     @${annotation_target}() {
-        local annotation_function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
-        local annotation_source_file="$(realpath "\${BASH_SOURCE[1]}")"
+        local annotation_source_file="\$(realpath "\${BASH_SOURCE[1]}")"
+        local annotation_function_namespace="\${FUNCNAME[0]}_\${annotation_source_file}_\${BASH_LINENO[0]}"
         local annotated_variable="\$(get_annotated_variable "\${annotation_source_file}")"
 
         eval "declare -gx \${annotation_function_namespace#@*}_post=false"
@@ -286,8 +286,8 @@ _build_variable_annotation_prepost() {
 
 	{ builtin source /dev/fd/999; } 999<<DECLARE_VARIABLE_ANNOTATION_PREPOST
     @${annotation_target}() {
-        local annotation_function_namespace="\${FUNCNAME[0]}_\${BASH_LINENO[0]}"
-        local annotation_source_file="$(realpath "\${BASH_SOURCE[1]}")"
+        local annotation_source_file="\$(realpath "\${BASH_SOURCE[1]}")"
+        local annotation_function_namespace="\${FUNCNAME[0]}_\${annotation_source_file}_\${BASH_LINENO[0]}"
         local annotated_variable="\$(get_annotated_variable "\${annotation_source_file}")"
 
         eval "declare -gx \${annotation_function_namespace#@*}_post=false"
